@@ -113,24 +113,29 @@
             $("tbody").on("click", ".excluir", function () {
                 let id = $(this).attr("id");
 
-                if (confirm("Tem certeza de que deseja excluir este registro?")) {
-                    $.ajax({
-                        url: `http://localhost:8080/v1/cacaushow/cadastro?id=${id}`,
-                        method: "DELETE",
-                        success: function (response) {
-                            console.log(response.status);
-                            // Removendo a linha da tabela após a exclusão bem-sucedida
-                            if (response.status === 200) {
-                                $(this).closest("tr").remove();
-                                location.reload()
-                            } else {
-                                console.error("Erro ao excluir o registro.");
+                const valorRecuperado = localStorage.getItem("tipoAcesso");
+                if (Number(valorRecuperado) === 1) {
+                    if (confirm("Tem certeza de que deseja excluir este registro?")) {
+                        $.ajax({
+                            url: `http://localhost:8080/v1/cacaushow/cadastro?id=${id}`,
+                            method: "DELETE",
+                            success: function (response) {
+                                console.log(response.status);
+                                // Removendo a linha da tabela após a exclusão bem-sucedida
+                                if (response.status === 200) {
+                                    $(this).closest("tr").remove();
+                                    location.reload()
+                                } else {
+                                    console.error("Erro ao excluir o registro.");
+                                }
+                            },
+                            error: function () {
+                                console.error("Erro ao fazer a solicitação de exclusão.");
                             }
-                        },
-                        error: function () {
-                            console.error("Erro ao fazer a solicitação de exclusão.");
-                        }
-                    });
+                        });
+                    }
+                }else{
+                    window.alert("Apenas administrador pode excluir")
                 }
             })
 
@@ -190,28 +195,37 @@
                     numero_celular_antigo: numero_celular_antigo
                 };
 
-                //Faz a solicitação PATCH para atualizar os dados no servidor
-                $.ajax({
-                    url: `http://localhost:8080/v1/cacaushow/cadastro?id=${cadastroId}`,
-                    method: "PATCH",
-                    contentType: "application/json",
-                    data: JSON.stringify(dadosAtualizados),
-                    success: function (response) {
-                        location.reload()
-                    },
-                    error: function (error) {
-                        let mensagemErro = document.createElement('p');
-                        mensagemErro.textContent = "Atenção verique os dados e tente novamente.";
-                        mensagemErro.classList.add('erro');
-                        document.body.appendChild(mensagemErro);
-                        setTimeout(() => {
-                            mensagemErro.remove()
-                        }, 3000)
-                    }
-                });
+                const valorRecuperado = localStorage.getItem("tipoAcesso");
+                if (Number(valorRecuperado) === 1) {
+                    $.ajax({
+                        url: `http://localhost:8080/v1/cacaushow/cadastro?id=${cadastroId}`,
+                        method: "PATCH",
+                        contentType: "application/json",
+                        data: JSON.stringify(dadosAtualizados),
+                        success: function (response) {
+                            location.reload()
+                        },
+                        error: function (error) {
+                            let mensagemErro = document.createElement('p');
+                            mensagemErro.textContent = "Atenção verique os dados e tente novamente.";
+                            mensagemErro.classList.add('erro');
+                            document.body.appendChild(mensagemErro);
+                            setTimeout(() => {
+                                mensagemErro.remove()
+                            }, 3000)
+                        }
+                    });
+                    // Oculta o formulário de edição
+                    $("#editForm").removeClass("flex").addClass("d-none");
+                } else {
+                    window.alert("Apenas administrador pode editar")
+                }
+            });
 
-                // Oculta o formulário de edição
-                $("#editForm").removeClass("flex").addClass("d-none");
+            document.getElementById("cancelarEdicao").addEventListener("click", function () {
+                let editForm = document.getElementById("editForm");
+                editForm.classList.remove("flex");
+                editForm.classList.add("d-none");
             });
         });
     </script>
