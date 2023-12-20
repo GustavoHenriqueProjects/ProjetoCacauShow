@@ -1,0 +1,39 @@
+#cadastroForm{
+    display: none;
+    width: 40%;
+    background-color: #333; 
+    max-height: auto;
+    color: white;
+    border: 2px solid #555; 
+    padding: 20px; 
+    border-radius: 10px;
+
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#cadastroForm label{
+    padding-top: 13px;
+}
+
+#cadastroForm input[type="checkbox"]{
+    margin-top: 15px;
+}
+
+#cadastrar_usuario{
+    margin-top: 13px;
+}
+
+
+.button_login{
+    display: flex;
+    justify-content: space-between;
+    padding-left: 13px;
+    align-items: end;
+}
+
+#form_login{
+    cursor: pointer;
+}

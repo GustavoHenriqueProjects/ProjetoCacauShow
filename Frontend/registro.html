@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="../Frontend/css/containerRegistro.css">
+    <link rel="stylesheet" href="../Frontend/css/editarFormulario.css">
+    <link rel="stylesheet" href="../Frontend/css/resposta.css">
+    <title>Lista de usuarios</title>
+</head>
+
+<body>
+    <div class="container_registro">
+        <table class="table table-bordered table-striped text-center">
+            <thead>
+                <tr class="th">
+                    <th style="background-color: #068ED0; color: white; ">Nome</th>
+                    <th style="background-color: #068ED0; color: white;">Data de nascimento</th>
+                    <th style="background-color: #068ED0; color: white;">E-mail</th>
+                    <th style="background-color: #068ED0; color: white;">Celular para contato</th>
+                    <th style="background-color: #068ED0; color: white;">Editar</th>
+                    <th style="background-color: #068ED0; color: white;">Excluir</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Div para editar pessoa -->
+    <div id="editForm" class="d-none">
+        <label for="nome" class="form-label">Nome:</label>
+        <input type="text" id="update_nome" name="update_nome" class="form-control" required>
+        <br>
+        <label for="dataNascimento" class="form-label">Data de Nascimento:</label>
+        <input type="date" id="dataNascimento" name="dataNascimento" class="form-control" required>
+        <br>
+        <label for="email" class="form-label">Email:</label>
+        <input type="text" id="update_email" name="update_email" class="form-control" required>
+        <br>
+        <label for="celular" class="form-label">Celular:</label>
+        <input type="text" id="update_celular" name="update_celular" class="form-control" required>
+        <br>
+        <button id="salvarEdicao" class="btn btn-primary float-start">Salvar</button>
+        <button id="cancelarEdicao" class="btn btn-danger float-end">Cancelar</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Fazendo a requisição AJAX para a API usando jQuery
+            $.ajax({
+                url: "http://localhost:8080/v1/cacaushow/cadastro",
+                method: "GET",
+                dataType: "json",
+                success: function (response) {
+                    populateTable(response.data);
+                },
+                error: function () {
+                    console.error("Erro ao obter dados da API.");
+                }
+            });
+
+            let dataNascimetoAntiga
+            // Função para preencher a tabela com os dados
+            function populateTable(data) {
+                var tableBody = $("tbody");
+
+                if (data.length > 0) {
+                    $.each(data, function (index, item) {
+                        let row = $("<tr>").addClass("td");
+                        // Extraia as partes da data (ano, mês e dia)
+                        let ano = item.data_nascimento.substring(0, 4);
+                        let mes = item.data_nascimento.substring(5, 7);
+                        let dia = item.data_nascimento.substring(8, 10);
+
+                        dataNascimetoAntiga = item.data_nascimento
+                        // Formate a data no formato brasileiro (dia/mês/ano)
+                        var dataFormatada = dia + "/" + mes + "/" + ano;
+                        var columns = [
+                            item.nome,
+                            dataFormatada,
+                            item.email,
+                            item.numero_celular,
+                            '<img id="' + item.id + '" class="editar" src="./img/editar.png" alt="editar">',
+                            '<img id="' + item.id + '" class="excluir" src="./img/excluir.png" alt="excluir">'
+                        ];
+
+                        $.each(columns, function (index, column) {
+                            var cell = $("<td>").html(column);
+                            row.append(cell);
+                        });
+
+                        tableBody.append(row);
+                    });
+                } else {
+                    // Se não houver dados, exibir uma mensagem na tabela
+                    let noDataRow = $("<tr>");
+                    let noDataCell = $("<td>").attr("colspan", "5").text("Nenhum dado encontrado.");
+                    noDataRow.append(noDataCell);
+                    tableBody.append(noDataRow);
+                }
+            }
+
+
+            $("tbody").on("click", ".excluir", function () {
+                let id = $(this).attr("id");
+
+                if (confirm("Tem certeza de que deseja excluir este registro?")) {
+                    $.ajax({
+                        url: `http://localhost:8080/v1/cacaushow/cadastro?id=${id}`,
+                        method: "DELETE",
+                        success: function (response) {
+                            console.log(response.status);
+                            // Removendo a linha da tabela após a exclusão bem-sucedida
+                            if (response.status === 200) {
+                                $(this).closest("tr").remove();
+                                location.reload()
+                            } else {
+                                console.error("Erro ao excluir o registro.");
+                            }
+                        },
+                        error: function () {
+                            console.error("Erro ao fazer a solicitação de exclusão.");
+                        }
+                    });
+                }
+            })
+
+
+            let dataNascimento
+            let cadastroId
+            let numero_celular_antigo
+            $("tbody").on("click", ".editar", function () {
+                let id = $(this).attr("id");
+
+                // Encontre a linha correspondente aos dados de edição
+                let linha = $(this).closest("tr");
+
+                // Armazene temporariamente os dados na variável global
+                dadosEdicao = {
+                    id: id,
+                    nome: linha.find("td:eq(0)").text(), // Coluna 0 é o Nome
+                    dataNascimento: linha.find("td:eq(1)").text(), // Coluna 1 é a Data de Nascimento
+                    email: linha.find("td:eq(2)").text(), // Coluna 2 é o Email
+                    celular: linha.find("td:eq(3)").text() // Coluna 3 é o Celular
+                };
+
+                dataNascimento = dadosEdicao.dataNascimento
+                cadastroId = dadosEdicao.id
+                numero_celular_antigo = dadosEdicao.celular
+
+                // Preencha o formulário com os dados
+                $("#update_nome").val(dadosEdicao.nome);
+                $("#update_email").val(dadosEdicao.email);
+                $("#update_celular").val(dadosEdicao.celular);
+
+                // Exiba o formulário de edição
+                $("#editForm").removeClass("d-none").addClass("flex");
+            });
+
+            $("#salvarEdicao").click(function () {
+                // Obtém os dados do formulário
+                const novoNome = $("#update_nome").val();
+                const novaDataNascimento = $("#dataNascimento").val();
+                const novoEmail = $("#update_email").val();
+                const novoCelular = $("#update_celular").val();
+
+                // Dividir a string em dia, mês e ano
+                let partesData = dataNascimento.split('/');
+                let dia = partesData[0];
+                let mes = partesData[1];
+                let ano = partesData[2];
+
+                let dataFormatada = `${ano}-${mes}-${dia}`;
+
+                // Constrói o objeto com os dados a serem enviados no corpo da requisição PATCH
+                const dadosAtualizados = {
+                    nome: novoNome,
+                    date: novaDataNascimento !== "" ? novaDataNascimento : dataFormatada,
+                    email: novoEmail,
+                    numero_celular_novo: novoCelular,
+                    numero_celular_antigo: numero_celular_antigo
+                };
+
+                //Faz a solicitação PATCH para atualizar os dados no servidor
+                $.ajax({
+                    url: `http://localhost:8080/v1/cacaushow/cadastro?id=${cadastroId}`,
+                    method: "PATCH",
+                    contentType: "application/json",
+                    data: JSON.stringify(dadosAtualizados),
+                    success: function (response) {
+                        location.reload()
+                    },
+                    error: function (error) {
+                        let mensagemErro = document.createElement('p');
+                        mensagemErro.textContent = "Atenção verique os dados e tente novamente.";
+                        mensagemErro.classList.add('erro');
+                        document.body.appendChild(mensagemErro);
+                        setTimeout(() => {
+                            mensagemErro.remove()
+                        }, 3000)
+                    }
+                });
+
+                // Oculta o formulário de edição
+                $("#editForm").removeClass("flex").addClass("d-none");
+            });
+        });
+    </script>
+</body>
+
+</html>

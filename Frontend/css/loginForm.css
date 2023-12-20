@@ -1,0 +1,30 @@
+#loginForm{
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    background-color: #333; 
+    max-height: auto;
+    color: white;
+    border: 2px solid #555; 
+    padding: 20px; 
+    border-radius: 10px;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#loginForm label, a{
+    padding-top: 13px;
+}
+
+#login{
+    margin-top: 20px;
+    background-color: green;
+    color: white;
+}
+
+#criar_conta{
+    cursor: pointer;
+}

@@ -1,0 +1,12 @@
+header{
+    grid-area: header;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid black;
+    overflow: hidden; 
+}
+
+header img{
+    padding-left: 5%;
+}

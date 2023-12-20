@@ -1,0 +1,16 @@
+.container_registro{
+    padding-top: 5%;
+    padding-left: 3%;
+    padding-right: 3%;
+    padding-bottom: 6%;
+}
+
+.texto-centralizado {
+    text-align: center;
+}
+
+@media(max-width: 500px){
+    .container_registro{
+        padding: 0px;
+    }
+}

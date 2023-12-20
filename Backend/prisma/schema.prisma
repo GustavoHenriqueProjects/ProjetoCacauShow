@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Tipo {
+  ADMINISTRADOR
+  USUARIO
+}
+
+model tbl_tipo_usuario{
+  id Int @id @default(autoincrement())
+  tipo Tipo @default(USUARIO)
+  pessoa tbl_pessoa[]
+
+  @@unique([id])
+}
+
+model tbl_pessoa{
+    id Int @id @default(autoincrement())
+    nome String @db.VarChar(100)
+    email String @db.VarChar(255) @unique
+    senha String @db.Text
+    data_nascimento DateTime @db.Date
+    profissao String @db.VarChar(100)
+    foto String @db.Text
+    contato tbl_contato[]
+    id_tipo_usuario Int
+    FK_TIPO_USUARIO_PESSOA tbl_tipo_usuario @relation(fields: [id_tipo_usuario], references: [id])
+
+  @@unique([id])
+}
+
+model tbl_contato{
+  id Int @id @default(autoincrement())
+  numero_celular String @db.VarChar(15) @unique
+  possui_whatsapp Boolean
+  notificacao tbl_notificacao[]
+  id_pessoa Int
+  FK_PESSOA_CONTATO tbl_pessoa @relation(fields: [id_pessoa], references: [id])
+
+  @@unique([id])
+}
+
+model tbl_notificacao{
+  id Int @id @default(autoincrement())
+  enviar_notificacao_sms Boolean
+  enviar_notificacao_whatsapp Boolean
+  id_contato Int
+  FK_CONTATO_NOTIFICACAO tbl_contato @relation(fields: [id_contato], references: [id])
+  
+  @@unique([id])
+}

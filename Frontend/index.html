@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/header.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/form.css">
+    <link rel="stylesheet" href="./css/loginForm.css">
+    <link rel="stylesheet" href="./css/resposta.css">
+    <script src="./js/login_cadastro.js" defer></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <header>
+        <img src="./img/logo_cacau_show.svg" alt="">
+    </header>
+
+    <main>
+        <form id="cadastroForm" class="form-signin">
+            <h1 class="h3 mb-3 font-weight-normal">Cadastro de Usuário</h1>
+
+            <div class="form-group">
+                <label for="id_tipo_usuario">Tipo de Usuário:</label>
+                <select name="id_tipo_usuario" id="id_tipo_usuario" class="form-control">
+                    <option value="1">Administrador</option>
+                    <option value="2">Usuário Comum</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" name="nome" id="nome" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha:</label>
+                <input type="password" name="senha" id="senha" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="data_nascimento">Data de Nascimento:</label>
+                <input type="date" name="data_nascimento" id="data_nascimento" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="profissao">Profissão:</label>
+                <input type="text" name="profissao" id="profissao" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="foto">URL da Foto:</label>
+                <input type="text" name="foto" id="foto" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="numero_celular">Número de Celular:</label>
+                <input type="tel" name="numero_celular" id="numero_celular" class="form-control" required>
+            </div>
+
+            <div class="form-group form-check">
+                <input type="checkbox" name="possui_whatsapp" id="possui_whatsapp" class="form-check-input">
+                <label for="possui_whatsapp" class="form-check-label">Possui WhatsApp?</label>
+            </div>
+
+            <div class="form-group form-check">
+                <input type="checkbox" name="enviar_notificacao_sms" id="enviar_notificacao_sms"
+                    class="form-check-input">
+                <label for="enviar_notificacao_sms" class="form-check-label">Enviar Notificação por SMS?</label>
+            </div>
+
+            <div class="form-group form-check">
+                <input type="checkbox" name="enviar_notificacao_whatsapp" id="enviar_notificacao_whatsapp"
+                    class="form-check-input">
+                <label for="enviar_notificacao_whatsapp" class="form-check-label">Enviar Notificação por
+                    WhatsApp?</label>
+            </div>
+
+            <div class="button_login">
+                <button id="cadastrar_usuario" class="btn btn-lg btn-primary btn-block" type="click">Cadastrar</button>
+
+                <a id="form_login">Login</a>
+            </div>
+
+        </form>
+
+        <form id="loginForm">
+            <label for="email">Email:</label>
+            <input type="email" id="login_email" name="email" required>
+
+            <label for="senha">Senha:</label>
+            <input type="password" id="login_senha" name="senha" required>
+
+            <button id="login" type="button">Entrar</button>
+
+            <a id="criar_conta">Criar Conta</a>
+        </form>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('input[name="numero_celular"]').mask('(00) 00000-0000');
+            $('input[name="email"]').mask("A", {
+                translation: {
+                    "A": {
+                        pattern: /[\w@\-.+]/,
+                        recursive: true
+                    }
+                }
+            });
+        });
+
+        $('#cadastrar_usuario').click(function () {
+
+            event.preventDefault();
+
+            var idTipoUsuario = parseInt($('#id_tipo_usuario').val(), 10);
+
+            // Constrói o objeto de dados a ser enviado
+            var userData = {
+                "id_tipo_usuario": idTipoUsuario,
+                "nome": $('#nome').val(),
+                "email": $('#email').val(),
+                "senha": $('#senha').val(),
+                "data_nascimento": $('#data_nascimento').val(),
+                "profissao": $('#profissao').val(),
+                "foto": $('#foto').val(),
+                "numero_celular": $('#numero_celular').val(), // Obtém o valor sem a máscara
+                "possui_whatsapp": $('#possui_whatsapp').prop('checked'),
+                "enviar_notificacao_sms": $('#enviar_notificacao_sms').prop('checked'),
+                "enviar_notificacao_whatsapp": $('#enviar_notificacao_whatsapp').prop('checked')
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:8080/v1/cacaushow/cadastro', // Substitua pelo caminho do seu script de cadastro
+                contentType: 'application/json',
+                data: JSON.stringify(userData),
+                success: function (response) {
+                    let mensagemErro = document.createElement('p');
+                    mensagemErro.textContent = "Usuario cadastrado com sucesso.";
+                    mensagemErro.classList.add('sucesso');
+                    document.body.appendChild(mensagemErro);
+                    setTimeout(() => {
+                        mensagemErro.remove()
+                    }, 3000)
+
+                    location.reload()
+
+                },
+                error: function (error) {
+                    let mensagemErro = document.createElement('p');
+                    mensagemErro.textContent = "Atenção verique os dados e tente novamente. Obs: Não é permitido cadastrar o mesmo email.";
+                    mensagemErro.classList.add('erro');
+                    document.body.appendChild(mensagemErro);
+                    setTimeout(() => {
+                        mensagemErro.remove()
+                    }, 3000)
+                }
+            });
+        });
+
+        $('#login').click(function () {
+
+            event.preventDefault();
+
+            // Constrói o objeto de dados a ser enviado
+            var userData = {
+                "email": $('#login_email').val(),
+                "senha": $('#login_senha').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:8080/v1/cacaushow/login', 
+                contentType: 'application/json',
+                data: JSON.stringify(userData),
+                success: function (response) {
+
+                    let tipoAcesso = response.data.tipoUsuarioId
+                    let idString = tipoAcesso
+                    localStorage.setItem("tipoAcesso", idString)
+
+                    window.location.href = 'registro.html'
+                },
+                error: function (error) {
+                    let mensagemErro = document.createElement('p');
+                    mensagemErro.textContent = "Atenção verique os dados e tente novamente.";
+                    mensagemErro.classList.add('erro');
+                    document.body.appendChild(mensagemErro);
+                    setTimeout(() => {
+                        mensagemErro.remove()
+                    }, 3000)
+                }
+            });
+        });
+
+    </script>
+</body>
+
+</html>
